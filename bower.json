@@ -1,0 +1,11 @@
+{
+  "name": "scdm-ionic",
+  "private": "true",
+  "devDependencies": {
+    "ionic": "driftyco/ionic-bower#1.0.0-rc.2"
+  },
+  "dependencies": {
+    "angular-ui-map": "~0.5.0",
+    "requirejs": "~2.1.17"
+  }
+}
