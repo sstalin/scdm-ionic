@@ -3,13 +3,13 @@
     angular.module('map', [])
         .controller('MapCtrl', MapCtrl);
 
-    MapCtrl.$inject = ['$scope', 'GoogleMap', 'EsriMap'];
+    MapCtrl.$inject = ['$scope', 'GoogleMap', 'EsriMap', 'AppModal'];
 
-    function MapCtrl($scope, GoogleMap, EsriMap) {
+    function MapCtrl($scope, GoogleMap, EsriMap, AppModal) {
         var map;
 
+        $scope.search = LocationSearch;
         $scope.map_mode = {map: 'Esri'};
-
         $scope.$watch('map_mode.map', function (mode) {
             var google_loaded;
             if (mode === 'Esri') {
@@ -23,7 +23,7 @@
             }
             if (mode === 'Google') {
                 if (EsriMap.map) {
-                    //delete EsriMap.options['center'];
+                    delete EsriMap.options.center;
                     EsriMap.options.extent = EsriMap.map.extent;
                     EsriMap.destroy();
                     document.getElementById('map').firstChild.style.display = 'block';
@@ -42,5 +42,9 @@
 
             }
         });
+
+        function LocationSearch(){
+            alert("search");
+        }
     }
 })();

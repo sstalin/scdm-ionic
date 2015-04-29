@@ -1,11 +1,11 @@
 // Ionic Starter App
 
 // angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
+// 'app' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-// 'starter.services' is found in services.js
-// 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'map', 'about', 'account'])
+// 'app.services' is found in services.js
+// 'app.controllers' is found in controllers.js
+angular.module('app', ['ionic', 'map', 'about', 'account'])
 
     .run(function ($ionicPlatform) {
         $ionicPlatform.ready(function () {
@@ -74,6 +74,33 @@ angular.module('starter', ['ionic', 'map', 'about', 'account'])
     });
 
 (function () {
+    'use strict';
+    angular.module('app')
+        .service('AppModal', AppModal);
+
+    AppModal.$inject = ['$ionicModal'];
+
+    function AppModal($ionicModal) {
+        var self = this;
+        this.create = createModal;
+        this.modal = null;
+        this.open = openModal;
+
+        function openModal(){
+            self.modal.show();
+        }
+        function createModal(template, scope) {
+            $ionicModal.fromTemplateUrl(template, {
+                scope: scope,
+                animation: 'slide-in-up'
+            }).then(function (modal) {
+                this.modal = modal;
+            });
+        }
+    }
+})();
+
+(function () {
     "use strict";
 
     angular.module('about', [])
@@ -89,13 +116,13 @@ angular.module('starter', ['ionic', 'map', 'about', 'account'])
     angular.module('map', [])
         .controller('MapCtrl', MapCtrl);
 
-    MapCtrl.$inject = ['$scope', 'GoogleMap', 'EsriMap'];
+    MapCtrl.$inject = ['$scope', 'GoogleMap', 'EsriMap', 'AppModal'];
 
-    function MapCtrl($scope, GoogleMap, EsriMap) {
+    function MapCtrl($scope, GoogleMap, EsriMap, AppModal) {
         var map;
 
+        $scope.search = LocationSearch;
         $scope.map_mode = {map: 'Esri'};
-
         $scope.$watch('map_mode.map', function (mode) {
             var google_loaded;
             if (mode === 'Esri') {
@@ -128,6 +155,10 @@ angular.module('starter', ['ionic', 'map', 'about', 'account'])
 
             }
         });
+
+        function LocationSearch(){
+            alert("search");
+        }
     }
 })();
 
@@ -142,7 +173,7 @@ angular.module('starter', ['ionic', 'map', 'about', 'account'])
         this.map = {};
         this.options = {
             center: {lat: 42.485, lng: -87.049}, //default to chicago
-            zoom: 8
+            zoom: 2
         };
         this.load = function () {
             require({
@@ -170,7 +201,7 @@ angular.module('starter', ['ionic', 'map', 'about', 'account'])
         this.map = null;
         this.options = {
             center: [-87.049, 42.485],
-            zoom: 7,
+            zoom: 2,
             basemap: "streets",
             scroll: true
         };

@@ -9,7 +9,7 @@
         this.map = {};
         this.options = {
             center: {lat: 42.485, lng: -87.049}, //default to chicago
-            zoom: 8
+            zoom: 2
         };
         this.load = function () {
             require({
@@ -37,7 +37,7 @@
         this.map = null;
         this.options = {
             center: [-87.049, 42.485],
-            zoom: 7,
+            zoom: 2,
             basemap: "streets",
             scroll: true
         };
