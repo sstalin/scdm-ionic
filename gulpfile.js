@@ -9,11 +9,15 @@ var sh = require('shelljs');
 var del = require('del');
 
 var paths = {
-    sass: ['./scss/**/*.scss'],
-    modules: ['./www/js/main/app.module.js', './www/js/main/*service.js', './www/js/about/*.js', './www/js/map/map*.js', './www/js/account/*.js']
+    about:['./www/js/about/*.js'],
+    account: ['./www/js/account/*.js'],
+    main: ['./www/js/main/app.main.js', './www/js/main/*service.js'],
+    map:['./www/js/map/map.js', './www/js/map/map*.js'],
+    modules: ['./www/js/main/main.all.js', './www/js/about/about.all.js', './www/js/account/account.all.js', './www/js/map/map.all.js'],
+    sass: ['./scss/**/*.scss']
 };
 
-gulp.task('default', ['sass']);
+gulp.task('default', ['sass', 'scripts']);
 
 gulp.task('sass', function (done) {
     gulp.src('./scss/ionic.app.scss')
@@ -29,6 +33,10 @@ gulp.task('sass', function (done) {
 
 gulp.task('watch', function () {
     gulp.watch(paths.sass, ['sass']);
+    gulp.watch(paths.about, ['concat.about']);
+    gulp.watch(paths.account, ['concat.account']);
+    gulp.watch(paths.map, ['concat.map']);
+    gulp.watch(paths.main, ['concat.main']);
     gulp.watch(paths.modules, ['scripts']);
 });
 
@@ -39,8 +47,35 @@ gulp.task('clean', function () {
     });
 });
 
+gulp.task('concat.about', function () {
+    //concat about files
+    return gulp.src(paths.about)
+        .pipe(concat('about.all.js'))
+        .pipe(gulp.dest('www/js/about/'));
+});
 
-gulp.task('scripts', ['clean'], function () {
+gulp.task('concat.account', function () {
+    //concat account files
+    return gulp.src(paths.account)
+        .pipe(concat('account.all.js'))
+        .pipe(gulp.dest('www/js/account/'));
+});
+
+gulp.task('concat.main', function () {
+    //concat main files
+    return gulp.src(paths.main)
+        .pipe(concat('main.all.js'))
+        .pipe(gulp.dest('www/js/main/'));
+});
+
+gulp.task('concat.map', function () {
+    //concat map files
+    return gulp.src(paths.map)
+        .pipe(concat('map.all.js'))
+        .pipe(gulp.dest('www/js/map/'));
+});
+
+gulp.task('scripts', ['clean', 'concat.about', 'concat.account', 'concat.main', 'concat.map'], function () {
     //concat script files
     return gulp.src(paths.modules)
         .pipe(concat('app.js'))

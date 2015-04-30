@@ -1,7 +1,5 @@
-(function () {
-    'use strict';
-    angular.module('map', [])
-        .controller('MapCtrl', MapCtrl);
+(function(){
+    angular.module('map').controller('MapCtrl', MapCtrl);
 
     MapCtrl.$inject = ['$scope', 'GoogleMap', 'EsriMap', 'AppModal', 'AppPopover'];
 
