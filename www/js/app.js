@@ -1,11 +1,11 @@
 // Ionic Starter App
 
 // angular.module is a global place for creating, registering and retrieving Angular modules
-// 'app' is the name of this angular module example (also set in a <body> attribute in index.html)
+// 'app.main' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-// 'app.services' is found in services.js
-// 'app.controllers' is found in controllers.js
-angular.module('app', ['ionic', 'map', 'about', 'account'])
+// 'app.main.services' is found in services.js
+// 'app.main.controllers' is found in controllers.js
+angular.module('app.main', ['ionic', 'map', 'about', 'account'])
 
     .run(function ($ionicPlatform) {
         $ionicPlatform.ready(function () {
@@ -75,7 +75,7 @@ angular.module('app', ['ionic', 'map', 'about', 'account'])
 
 (function () {
     'use strict';
-    angular.module('app')
+    angular.module('app.main')
         .service('AppModal', AppModal);
 
     AppModal.$inject = ['$ionicModal'];
@@ -84,21 +84,97 @@ angular.module('app', ['ionic', 'map', 'about', 'account'])
         var self = this;
         this.create = createModal;
         this.modal = null;
-        this.open = openModal;
+        this.template = null;
+        this.show = openModal;
+        this.hide = closeModal;
+        this.destroy = destroyModal;
 
         function openModal(){
             self.modal.show();
         }
+        function closeModal(){
+            self.modal.hide();
+        }
+        function destroyModal(){
+            self.modal.remove();
+            self.modal = null;
+            self.template = null;
+        }
+
         function createModal(template, scope) {
+            if(self.template === template && self.modal !== null){
+                self.show();
+                return self.modal;
+            }
+            if(self.modal !== null){
+               self.destroy();
+            }
+
             $ionicModal.fromTemplateUrl(template, {
                 scope: scope,
-                animation: 'slide-in-up'
+                animation: 'slide-in-up',
+                focusFirstInput: true,
+                backdropClickToClose:true,
+                hardwareBackButtonClose:true
             }).then(function (modal) {
-                this.modal = modal;
+                self.modal = modal;
+                self.template = template;
+                self.show();
             });
+            return self.modal;
         }
     }
 })();
+
+(function () {
+    'use strict';
+    angular.module('app.main')
+        .service('AppPopover', AppPopover);
+
+    AppPopover.$inject = ['$ionicPopover'];
+
+    function AppPopover($ionicPopover) {
+        var self = this;
+        this.create = createPopover;
+        this.popover = null;
+        this.template = null;
+        this.show = openPopover;
+        this.hide = closePopover;
+        this.destroy = destroyPopover;
+
+        function openPopover($event){
+            self.popover.show($event);
+        }
+        function closePopover(){
+            self.popover.hide();
+        }
+        function destroyPopover(){
+            self.popover.remove();
+            self.popover = null;
+            self.template = null;
+        }
+
+        function createPopover(template, scope, $event) {
+            if(self.template === template && self.popover !== null){
+                self.show($event);
+                return self.popover;
+            }
+            if(self.popover !== null){
+                self.destroy();
+            }
+
+            $ionicPopover.fromTemplateUrl(template, {
+                scope: scope
+            }).then(function (popover) {
+                self.popover = popover;
+                self.template = template;
+                self.show($event);
+            });
+            return self.popover;
+        }
+    }
+})();
+
 
 (function () {
     "use strict";
@@ -116,20 +192,21 @@ angular.module('app', ['ionic', 'map', 'about', 'account'])
     angular.module('map', [])
         .controller('MapCtrl', MapCtrl);
 
-    MapCtrl.$inject = ['$scope', 'GoogleMap', 'EsriMap', 'AppModal'];
+    MapCtrl.$inject = ['$scope', 'GoogleMap', 'EsriMap', 'AppModal', 'AppPopover'];
 
-    function MapCtrl($scope, GoogleMap, EsriMap, AppModal) {
+    function MapCtrl($scope, GoogleMap, EsriMap, AppModal, AppPopover) {
         var map;
 
         $scope.search = LocationSearch;
+        $scope.modal_close = AppModal.hide;
         $scope.map_mode = {map: 'Esri'};
         $scope.$watch('map_mode.map', function (mode) {
             var google_loaded;
             if (mode === 'Esri') {
                 document.getElementById('map').firstChild.style.display = 'none';
-                if(EsriMap.esriMapConstructor){
+                if (EsriMap.esriMapConstructor) {
                     map = EsriMap.createMap();
-                }else{
+                } else {
                     map = EsriMap.load();
                 }
 
@@ -141,23 +218,27 @@ angular.module('app', ['ionic', 'map', 'about', 'account'])
                     EsriMap.destroy();
                     document.getElementById('map').firstChild.style.display = 'block';
                 }
-                try{
+                try {
                     google_loaded = google.maps ? true : false;
-                }catch (e){
+                } catch (e) {
                     console.log(e);
                 }
 
-                if(google_loaded){
+                if (google_loaded) {
                     console.log("Google Map instance exist");
-                }else{
+                } else {
                     map = GoogleMap.load();
                 }
 
             }
         });
 
-        function LocationSearch(){
-            alert("search");
+        /**
+         * Opens search popover
+         * @constructor
+         */
+        function LocationSearch($event) {
+            var popover = AppPopover.create('templates/search-popover.html', $scope, $event);
         }
     }
 })();

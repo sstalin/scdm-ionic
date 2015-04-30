@@ -4366,9 +4366,9 @@ ion-tabs.tabs-color-active-dark .tab-item {
   z-index: 10;
   display: block;
   margin-top: 12px;
-  margin-left: -110px;
+  margin-left: -45%;
   height: 280px;
-  width: 220px;
+  width: 90%;
   background-color: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   opacity: 0; }

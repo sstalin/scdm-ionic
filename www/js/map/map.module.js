@@ -3,20 +3,21 @@
     angular.module('map', [])
         .controller('MapCtrl', MapCtrl);
 
-    MapCtrl.$inject = ['$scope', 'GoogleMap', 'EsriMap', 'AppModal'];
+    MapCtrl.$inject = ['$scope', 'GoogleMap', 'EsriMap', 'AppModal', 'AppPopover'];
 
-    function MapCtrl($scope, GoogleMap, EsriMap, AppModal) {
+    function MapCtrl($scope, GoogleMap, EsriMap, AppModal, AppPopover) {
         var map;
 
         $scope.search = LocationSearch;
+        $scope.modal_close = AppModal.hide;
         $scope.map_mode = {map: 'Esri'};
         $scope.$watch('map_mode.map', function (mode) {
             var google_loaded;
             if (mode === 'Esri') {
                 document.getElementById('map').firstChild.style.display = 'none';
-                if(EsriMap.esriMapConstructor){
+                if (EsriMap.esriMapConstructor) {
                     map = EsriMap.createMap();
-                }else{
+                } else {
                     map = EsriMap.load();
                 }
 
@@ -28,23 +29,27 @@
                     EsriMap.destroy();
                     document.getElementById('map').firstChild.style.display = 'block';
                 }
-                try{
+                try {
                     google_loaded = google.maps ? true : false;
-                }catch (e){
+                } catch (e) {
                     console.log(e);
                 }
 
-                if(google_loaded){
+                if (google_loaded) {
                     console.log("Google Map instance exist");
-                }else{
+                } else {
                     map = GoogleMap.load();
                 }
 
             }
         });
 
-        function LocationSearch(){
-            alert("search");
+        /**
+         * Opens search popover
+         * @constructor
+         */
+        function LocationSearch($event) {
+            var popover = AppPopover.create('templates/search-popover.html', $scope, $event);
         }
     }
 })();
